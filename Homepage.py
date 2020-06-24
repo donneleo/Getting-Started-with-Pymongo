@@ -4,8 +4,7 @@ from tkinter import *
 import pymongo
 
 def add_name():
-    client = pymongo.MongoClient(
-        "*****************************")
+    client = pymongo.MongoClient("************")
     db = client.test
     mycol = db["names"]
 
@@ -22,7 +21,11 @@ def add_name():
         e1.delete(0, tk.END)
         e2.delete(0, tk.END)
 
-    app_add = Tk()
+    def exit_window():
+        app_add.destroy()
+
+    app_add = Tk(className=" Add")
+    app_add.geometry("200x125")
     tk.Label(app_add, text="First Name").grid(row=0)
     tk.Label(app_add, text="Last Name").grid(row=1)
 
@@ -35,25 +38,39 @@ def add_name():
                                                                column=1,
                                                                sticky=tk.W,
                                                                pady=4)
+    tk.Button(app_add, text="Exit", command=exit_window).grid(row=4,column=1,sticky=tk.W,pady=4)
 
 def search_name():
-    client = pymongo.MongoClient(
-        "**********************************")
+    client = pymongo.MongoClient("***************")
     db = client.test
     mycol = db["names"]
 
     def show_results(result):
-        print(result)
+        results = []
+        number_elements = 0
+        for x in result:
+            results.append(x)
+            number_elements +=1
+            results.append("\n")
+            results.append("\n")
+        if(number_elements == 0):
+            messagebox.showinfo(" Search Results", "No Match Found")
+        else:
+            messagebox.showinfo(" Search Results", results)
 
     def search_database():
         firstName = str(e3.get())
         query = { "First Name": firstName}
         mydoc = mycol.find(query)
-        for x in mydoc.find({}, {"_id":0}):
-            print(x)
+        show_results(mydoc)
         e3.delete(0, tk.END)
+        app_search.destroy()
 
-    app_search = Tk()
+    def exit_search_window():
+        app_search.destroy()
+
+    app_search = Tk(className=" Search")
+    app_search.geometry("200x100")
     tk.Label(app_search, text="First Name").grid(row=0)
     e3 = tk.Entry(app_search)
     e3.grid(row=0, column=1)
@@ -61,11 +78,17 @@ def search_name():
                                                                        column=1,
                                                                        sticky=tk.W,
                                                                        pady=4)
+    tk.Button(app_search, text="Exit", command=exit_search_window).grid(row=4,column=1,sticky=tk.W,pady=4)
 
+def end_app():
+    app.destroy()
 
-app = Tk()
-button1 = tk.Button(app, text="Add to Database", command=add_name).grid(row=1, column=0)
-button2 = tk.Button(app, text="Search the Databse", command=search_name).grid(row=1, column=2)
+app = Tk(className = " Cill Dara Hunting Search")
+app.geometry("240x125")
+
+button1 = tk.Button(app, text="Add to Database", command=add_name).grid(row=1, column=1, padx=8, pady=8)
+button2 = tk.Button(app, text="Search the Databse", command=search_name).grid(row=1, column=2, padx=8, pady=8)
+button3 = tk.Button(app, text="Close App", command=end_app).grid(row=3, column=2, pady=15)
 
 app.mainloop()
 tk.mainloop()
